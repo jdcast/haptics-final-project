@@ -114,6 +114,10 @@ unsigned int output = 0;          // Output command to the motor
 int counter = 0;
 int on_timer = 0;
 bool timer_on = false;
+unsigned long start_millis_off = 0UL;
+unsigned long start_millis_on = 0UL;
+unsigned long interval_on = 100UL; 
+unsigned long interval_off = 200UL;
 
 // // kp and kd constants for Leader and Follower
 // double kp1 = 100;
@@ -310,21 +314,35 @@ void loop()
   // Serial.println(output, 4);
   // analogWrite(pwmPin, (int)25); // output the signal
   
-  // counter++;
-  // if (counter % 10000 == 0) {
+  
+  // if (counter % 320000 == 0) {
   //   digitalWrite(pwmPin, HIGH);
   //   timer_on = true;
   //   counter = 0;
   // } else if (timer_on) {
   //   on_timer++;
     
-  //   if (on_timer >= 750) {
+  //   if (on_timer == 160000) {
   //     on_timer = 0;
   //     timer_on = false;
   //     digitalWrite(pwmPin, LOW);
   //   }
-  // }  
+  // } else {
+  //   counter++;
+  // } 
   // Serial.println(timer_on);
+
+  // unsigned long current_millis = millis();
+
+  // if (current_millis - start_millis_off > interval_off && !timer_on) { // start vibration
+  //   digitalWrite(pwmPin, HIGH);
+  //   start_millis_on = current_millis;
+  //   timer_on = true;
+  // } else if (current_millis - start_millis_on > interval_on && timer_on) { // stop vibration
+  //   digitalWrite(pwmPin, LOW);
+  //   start_millis_off = current_millis;
+  //   timer_on = false;
+  // }
 
   digitalWrite(pwmPin, HIGH);
   delay(100);//0.001);
