@@ -75,31 +75,36 @@ void loop() {
   } 
   encoder0PinALast = n1;
   encoder0PinBLast = n2;
-  Serial.print("encoder");Serial.println(encoder0Pos);Serial.println ("");
+
+  // if (encoder0Pos % 480 == 0) {
+  //   Serial.print("encoder");Serial.println(encoder0Pos);Serial.println ("");
+  // }
+  
   // Serial.println(output);
 
   potVal = analogRead(potPin);   // read the potentiometer value at the input pin
 
-  if (potVal < 341)  // Lowest third of the potentiometer's range (0-340)
+  if (potVal < 512)  // Lowest half of the potentiometer's range (0-512) -> rotate clockwise
   {                  
-    potVal = (potVal * 3) / 4; // Normalize to 0-255
+    potVal = ( -1*(potVal-512) * 2) / 4; // Normalize to 0-255
+    digitalWrite(dirPin, LOW);
   }
-  else if (potVal < 682) // Middle third of potentiometer's range (341-681)
+  else  // Upper half of potentiometer"s range (512-1023) -> rotate counter clockwise
   {
-    potVal = ( (potVal-341) * 3) / 4; // Normalize to 0-255
-  }
-  else  // Upper third of potentiometer"s range (682-1023)
-  {
-    potVal = ( (potVal-683) * 3) / 4; // Normalize to 0-255
+    potVal = ( (potVal-512) * 2) / 4; // Normalize to 0-255
+    digitalWrite(dirPin, HIGH);
   }
 
+  // if (encoder0Pos % 480 == 0) {
+  //   Serial.println(potVal);
+  // }
+
   duty = potVal / 255.0; // convert potVal to 0-100% range
-  digitalWrite(dirPin, HIGH);
   output = (int)(duty * 255);  // convert duty cycle to output signal
   analogWrite(pwmPin, output); // output the signal
 
   // Serial.println(potVal);
-  //Serial.println(output);
+  // Serial.println(output);
 }
 
 
