@@ -19,11 +19,25 @@ unsigned int output = 0; // Output command to the motor
 int potPin = A5; // Potentiometer output connected to analog pin 3
 int potVal = 0; // Variable to store the input from the potentiometer
 
+
+
+// declare variable values for vib
+
+int vibPin = 6; // PWM pin for vibration actuator 
+int tar1 = 240;    // encoder position of vib act row 1
+int tar2 = 0;   // encoder position of vib act row 2
+int tarRange = 20; // range around tar values that vib act should be actuated
+int cirEncoderPos;   // position of encoder limited to 0 - 480
+
+
+
+
 void setup() {
   pinMode(encoder0PinA, INPUT);
   pinMode(encoder0PinB, INPUT);
   pinMode(pwmPin, OUTPUT);  // PWM pin for motor
   pinMode(dirPin, OUTPUT);  // dir pin for motor
+  pinMode(vibPin, OUTPUT); // PWM pin for vib act
 
   // Set PWM frequency
   setPwmFrequency(pwmPin, 1);
@@ -76,11 +90,23 @@ void loop() {
   encoder0PinALast = n1;
   encoder0PinBLast = n2;
 
-  // if (encoder0Pos % 480 == 0) {
-  //   Serial.print("encoder");Serial.println(encoder0Pos);Serial.println ("");
-  // }
+//   if (encoder0Pos % 480 == 0) {
+//     Serial.print("encoder");Serial.println(encoder0Pos);Serial.println ("");
+//   }
   
-  // Serial.println(output);
+//   Serial.println(output);
+
+
+  cirEncoderPos = encoder0Pos % 480;
+  if (cirEncoderPos > (tar1-(tarRange/2)) && cirEncoderPos < (tar1+(tarRange/2)) ) {    
+    analogWrite(vibPin, (int)255);
+  }
+  else{
+    analogWrite(vibPin, (int)0);
+  }
+
+
+
 
   potVal = analogRead(potPin);   // read the potentiometer value at the input pin
 
@@ -94,6 +120,8 @@ void loop() {
     potVal = ( (potVal-512) * 2) / 4; // Normalize to 0-255
     digitalWrite(dirPin, HIGH);
   }
+
+
 
   // if (encoder0Pos % 480 == 0) {
   //   Serial.println(potVal);
