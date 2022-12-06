@@ -2,8 +2,8 @@
 //Connect Encoder to Pins encoder0PinA, encoder0PinB, and +5V.
 //Mechatronics 530.421 Lab 2
 
-int encoder0PinA = 4;
-int encoder0PinB = 5;
+int encoder0PinA = 9;
+int encoder0PinB = 10;
 int encoder0Pos = 0;
 int encoder0PinALast = LOW;
 int encoder0PinBLast = LOW;
@@ -16,7 +16,7 @@ double duty = 0; // Duty cylce (between 0 and 255)
 unsigned int output = 0; // Output command to the motor
 
 // INPUT: Potentiometer should be connected to 5V and GND
-int potPin = A5; // Potentiometer output connected to analog pin 3
+int potPin = A3; // Potentiometer output connected to analog pin 3
 int potVal = 0; // Variable to store the input from the potentiometer
 
 
@@ -29,8 +29,10 @@ int tar2 = 0;   // encoder position of vib act row 2
 int tarRange = 20; // range around tar values that vib act should be actuated
 int cirEncoderPos;   // position of encoder limited to 0 - 480
 
+int vibDigWritePin1 = 2;
+int vibDigWritePin2 = 3;
 
-
+int count = 0;
 
 void setup() {
   pinMode(encoder0PinA, INPUT);
@@ -38,6 +40,7 @@ void setup() {
   pinMode(pwmPin, OUTPUT);  // PWM pin for motor
   pinMode(dirPin, OUTPUT);  // dir pin for motor
   pinMode(vibPin, OUTPUT); // PWM pin for vib act
+  pinMode(vibDigWritePin1, OUTPUT);
 
   // Set PWM frequency
   setPwmFrequency(pwmPin, 1);
@@ -49,6 +52,7 @@ void setup() {
   digitalWrite(dirPin, LOW);
   output = (int)(duty * 255);  // convert duty cycle to output signal
   analogWrite(pwmPin, output); // output the signal
+
 }
 
 //Increase or decrease pos depends on user's definition of positive pos.
@@ -90,36 +94,58 @@ void loop() {
   encoder0PinALast = n1;
   encoder0PinBLast = n2;
 
-//   if (encoder0Pos % 480 == 0) {
-//     Serial.print("encoder");Serial.println(encoder0Pos);Serial.println ("");
-//   }
+  //if (encoder0Pos % 480 == 0) {
+  //  Serial.print("encoder");Serial.println(encoder0Pos);Serial.println ("");
+  //}
   
 //   Serial.println(output);
 
 
   cirEncoderPos = encoder0Pos % 480;
+  
+  //digitalWrite(vibDigWritePin1, LOW);
+
+  //if (encoder0Pos % 480 == 2) {
+  //  Serial.println(encoder0Pos);
+  //}
+
   if (cirEncoderPos > (tar1-(tarRange/2)) && cirEncoderPos < (tar1+(tarRange/2)) ) {    
+    
+    digitalWrite(vibDigWritePin1, HIGH);
     analogWrite(vibPin, (int)255);
   }
   else{
+    digitalWrite(vibDigWritePin1, LOW);
     analogWrite(vibPin, (int)0);
   }
 
+  //analogWrite(vibPin, (int)125);
 
+  count = count + 1;
+  analogWrite(vibDigWritePin1, count);
 
 
   potVal = analogRead(potPin);   // read the potentiometer value at the input pin
 
-  if (potVal < 512)  // Lowest half of the potentiometer's range (0-512) -> rotate clockwise
-  {                  
-    potVal = ( -1*(potVal-512) * 2) / 4; // Normalize to 0-255
+  //Serial.println(potVal);
+
+  if (potVal < 140)  // Lowest half of the potentiometer's range (0-512) -> rotate clockwise
+  {       
+    //potVal = potVal - 123;           
+    potVal = 255*(140 - potVal)/ 140; // Normalize to 0-255
     digitalWrite(dirPin, LOW);
   }
-  else  // Upper half of potentiometer"s range (512-1023) -> rotate counter clockwise
+  else if (potVal > 190)  // Upper half of potentiometer"s range (512-1023) -> rotate counter clockwise
   {
-    potVal = ( (potVal-512) * 2) / 4; // Normalize to 0-255
+    potVal = 255*(potVal-190)/833; // Normalize to 0-255
     digitalWrite(dirPin, HIGH);
   }
+  else {
+    potVal = 0;
+  }
+
+
+
 
 
 
@@ -128,6 +154,7 @@ void loop() {
   // }
 
   duty = potVal / 255.0; // convert potVal to 0-100% range
+  Serial.println(duty);
   output = (int)(duty * 255);  // convert duty cycle to output signal
   analogWrite(pwmPin, output); // output the signal
 
