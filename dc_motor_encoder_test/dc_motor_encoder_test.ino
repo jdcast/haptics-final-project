@@ -122,7 +122,12 @@ void loop() {
   //analogWrite(vibPin, (int)125);
 
   count = count + 1;
-  analogWrite(vibDigWritePin1, count);
+  if (count % 400 == 0){
+    analogWrite(vibDigWritePin1, count);
+  }
+  
+
+  Serial.println(count);
 
 
   potVal = analogRead(potPin);   // read the potentiometer value at the input pin
