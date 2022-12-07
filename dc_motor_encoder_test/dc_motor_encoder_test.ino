@@ -25,7 +25,7 @@ float potVal_norm = 0;
 
 int vibPin = 6; // PWM pin for vibration actuator 
 float tar1 = 240;    // encoder position of vib act row 1
-float tar2 = 0;   // encoder position of vib act row 2
+float tar2 = 10;   // encoder position of vib act row 2
 float tarRange = 60; // range around tar values that vib act should be actuated
 float cirEncoderPos;   // position of encoder limited to 0 - 480
 
@@ -71,12 +71,12 @@ void loop() {
 
 
   // reset encoder count
-  if (encoder0Pos > 32660) {
-    encoder0Pos = 0;
+  if (encoder0Pos > 30000) {
+    encoder0Pos = 20;
   }
 
   else if (encoder0Pos < 20) {
-    encoder0Pos = 32660;
+    encoder0Pos = 30000;
   }
 
 
@@ -132,9 +132,9 @@ void loop() {
   
   //digitalWrite(vibDigWritePin1, LOW);
 
-  //if (encoder0Pos % 480 == 20) {
-  //  Serial.println(encoder0Pos);
-  //}
+  if (encoder0Pos % 480 == 20) {
+    Serial.println(encoder0Pos);
+  }
 
   if (cirEncoderPos > (tar1-(tarRange/2)) && cirEncoderPos < (tar1+(tarRange/2)) ) {    
     digitalWrite(vibDigWritePin1, HIGH);
