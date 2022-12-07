@@ -17,22 +17,22 @@ unsigned int output = 0; // Output command to the motor
 
 // INPUT: Potentiometer should be connected to 5V and GND
 int potPin = A3; // Potentiometer output connected to analog pin 3
-int potVal = 0; // Variable to store the input from the potentiometer
+float potVal = 0; // Variable to store the input from the potentiometer
 float potVal_norm = 0;
 
 
 // declare variable values for vib
 
 int vibPin = 6; // PWM pin for vibration actuator 
-int tar1 = 240;    // encoder position of vib act row 1
-int tar2 = 0;   // encoder position of vib act row 2
-int tarRange = 20; // range around tar values that vib act should be actuated
-int cirEncoderPos;   // position of encoder limited to 0 - 480
+float tar1 = 240;    // encoder position of vib act row 1
+float tar2 = 0;   // encoder position of vib act row 2
+float tarRange = 60; // range around tar values that vib act should be actuated
+float cirEncoderPos;   // position of encoder limited to 0 - 480
 
 int vibDigWritePin1 = 2;
 int vibDigWritePin2 = 3;
 
-int testWritePin = 9;
+int testWritePin = 9;  
 int testReadPin = A5;
 int test = 5;
 
@@ -67,6 +67,18 @@ void setup() {
 void loop() {
   n1 = digitalRead(encoder0PinA);
   n2 = digitalRead(encoder0PinB);
+
+
+
+  // reset encoder count
+  if (encoder0Pos > 32660) {
+    encoder0Pos = 0;
+  }
+
+  else if (encoder0Pos < 20) {
+    encoder0Pos = 32660;
+  }
+
 
 //Using rising edge of the channel A
   if ((encoder0PinALast == LOW) && (n1 == HIGH)) {
@@ -107,17 +119,20 @@ void loop() {
   //  Serial.print("encoder");Serial.println(encoder0Pos);Serial.println ("");
   //}
   
-  //Serial.print(encoder0Pos);
+  //Serial.println(encoder0Pos);
 
 
 //   Serial.println(output);
 
 
+
+  
+
   cirEncoderPos = encoder0Pos % 480;
   
   //digitalWrite(vibDigWritePin1, LOW);
 
-  //if (encoder0Pos % 480 == 2) {
+  //if (encoder0Pos % 480 == 20) {
   //  Serial.println(encoder0Pos);
   //}
 
@@ -145,21 +160,20 @@ void loop() {
     analogWrite(vibDigWritePin1, count);
   }
   
-
+  
   potVal = analogRead(potPin);   // read the potentiometer value at the input pin
-  if (potVal < 141)  // Lowest half of the potentiometer's range (0-512) -> rotate clockwise
-  {       
-    //potVal = potVal - 123;           
-    potVal_norm = (140 - potVal)/140.0; // Normalize to 0-255
+  if (potVal < 141.0)  // Lowest half of the potentiometer's range (0-512) -> rotate clockwise
+  {            
+    potVal_norm = (140.0 - potVal)/140.0; // Normalize to 0-255
     digitalWrite(dirPin, LOW);
   }
   // pot not linear, make 820 max instead of 1023
-  else if (potVal > 189)  // Upper half of potentiometer"s range (512-1023) -> rotate counter clockwise
+  else if (potVal > 189.0)  // Upper half of potentiometer"s range (512-1023) -> rotate counter clockwise
   {
-    if (potVal > 819) {
-      potVal = 820;
+    if (potVal > 819.0) {
+      potVal = 820.0;
     }
-    potVal_norm = (potVal-190)/630.0; // Normalize to 0-255
+    potVal_norm = (potVal - 190.0)/630.0; // Normalize to 0-255
     digitalWrite(dirPin, HIGH);
   }
   else {
