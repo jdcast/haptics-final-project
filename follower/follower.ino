@@ -10,7 +10,7 @@ int encoder0PinBLast = LOW;
 int n1 = LOW;
 int n2 = LOW;
 
-int pwmPin = 5; // PWM output pin for motor 
+int vibPin2 = 5; // PWM output pin for motor 
 int dirPin = 8; // direction output pin for motor 
 double duty = 0; // Duty cylce (between 0 and 255)
 unsigned int output = 0; // Output command to the motor
@@ -23,29 +23,32 @@ int potVal = 0; // Variable to store the input from the potentiometer
 
 // declare variable values for vib
 
-int vibPin = 6; // PWM pin for vibration actuator 
+int vibPin1 = 6; // PWM pin for vibration actuator 
 int tar1 = 240;    // encoder position of vib act row 1
 int tar2 = 0;   // encoder position of vib act row 2
 int tarRange = 20; // range around tar values that vib act should be actuated
 int cirEncoderPos;   // position of encoder limited to 0 - 480
 
 int vibDigReadPin1 = A4;
-int vibDigWritePin2 = 3;
+int vibDigReadPin2 = A5;
 
 int vib1;
+int vib2;
 
-
+int count = 0;
 
 void setup() {
   pinMode(encoder0PinA, INPUT);
   pinMode(encoder0PinB, INPUT);
-  pinMode(pwmPin, OUTPUT);  // PWM pin for motor
+  //pinMode(pwmPin, OUTPUT);  // PWM pin for motor
   pinMode(dirPin, OUTPUT);  // dir pin for motor
-  pinMode(vibPin, OUTPUT); // PWM pin for vib act
+  pinMode(vibPin1, OUTPUT); // PWM pin for vib act
   pinMode(vibDigReadPin1, INPUT);
+  pinMode(vibPin2, OUTPUT); // PWM pin for vib act
+  pinMode(vibDigReadPin2, INPUT);
 
   // Set PWM frequency
-  setPwmFrequency(pwmPin, 1);
+  //setPwmFrequency(pwmPin, 1);
 
   Serial.begin(9600);
 
@@ -61,20 +64,24 @@ void setup() {
 
 //Increase or decrease pos depends on user's definition of positive pos.
 void loop() {
-  vib1 = analogRead(vibDigReadPin1);
+  vib1 = digitalRead(vibDigReadPin1);
+  vib2 = digitalRead(vibDigReadPin2);
 
-
-  if (vib1 % 400 == 5){
-    Serial.println(vib1);
-  }
   
 
 
   if (vib1 == HIGH) {
-    analogWrite(vibPin, (int)125);
+    analogWrite(vibPin1, (int)125);
   } 
   else {
-    analogWrite(vibPin, (int)0);
+    analogWrite(vibPin1, (int)0);
+  }
+
+  if (vib2 == HIGH) {
+    analogWrite(vibPin2, (int)125);
+  } 
+  else {
+    analogWrite(vibPin2, (int)0);
   }
 
 }
